@@ -1,26 +1,75 @@
-#  Как работать с репозиторием финального задания
+# [Kittygram](https://kittygram14sp.ddns.net) - социальная сеть для размещения фотографий котов.
 
-## Что нужно сделать
+## Описание проекта
 
-Настроить запуск проекта Kittygram в контейнерах и CI/CD с помощью GitHub Actions
+Проект написан в рамках учебного курса по Python от Яндекс.Практикум.
+Пользователи могут регистрироваться, загружать фотографии своих котов с кратким описанием, и смотреть котиков других пользователей.
 
-## Как проверить работу с помощью автотестов
 
-В корне репозитория создайте файл tests.yml со следующим содержимым:
-```yaml
-repo_owner: ваш_логин_на_гитхабе
-kittygram_domain: полная ссылка (https://доменное_имя) на ваш проект Kittygram
-taski_domain: полная ссылка (https://доменное_имя) на ваш проект Taski
-dockerhub_username: ваш_логин_на_докерхабе
+## Технологии
+
+- Python 3.9
+- Django 3.2.3
+- Django REST framework 3.12.4
+- JavaScript
+
+## Запуск проекта из образов с Docker hub
+
+Для запуска необходимо на создать папку проекта, например `kittygram` и перейти в нее:
+
+```bash
+mkdir kittygram
+cd kittygram
 ```
 
-Скопируйте содержимое файла `.github/workflows/main.yml` в файл `kittygram_workflow.yml` в корневой директории проекта.
+В папку проекта скачиваем файл `docker-compose.production.yml` и запускаем его:
 
-Для локального запуска тестов создайте виртуальное окружение, установите в него зависимости из backend/requirements.txt и запустите в корневой директории проекта `pytest`.
+```bash
+sudo docker compose -f docker-compose.production.yml up
+```
 
-## Чек-лист для проверки перед отправкой задания
+Произойдет скачивание образов, создание и включение контейнеров, создание томов и сети.
 
-- Проект Taski доступен по доменному имени, указанному в `tests.yml`.
-- Проект Kittygram доступен по доменному имени, указанному в `tests.yml`.
-- Пуш в ветку main запускает тестирование и деплой Kittygram, а после успешного деплоя вам приходит сообщение в телеграм.
-- В корне проекта есть файл `kittygram_workflow.yml`.
+## Запуск проекта из исходников GitHub
+
+Клонируем себе репозиторий: 
+
+```bash 
+git clone git@github.com:Astaforkin/kittygram_final.git
+```
+
+Выполняем запуск:
+
+```bash
+sudo docker compose -f docker-compose.yml up
+```
+
+## После запуска: Миграции, сбор статистики
+
+После запуска необходимо выполнить сбор статистики и миграции бэкенда. Статистика фронтенда собирается во время запуска контейнера, после чего он останавливается. 
+
+```bash
+sudo docker compose -f [имя-файла-docker-compose.yml] exec backend python manage.py migrate
+
+sudo docker compose -f [имя-файла-docker-compose.yml] exec backend python manage.py collectstatic
+
+sudo docker compose -f [имя-файла-docker-compose.yml] exec backend cp -r /app/collected_static/. /static/static/
+```
+
+И далее проект доступен на: 
+
+```
+http://localhost:9000/
+```
+
+## Остановка оркестра контейнеров
+
+В окне, где был запуск **Ctrl+С** или в другом окне:
+
+```bash
+sudo docker compose -f docker-compose.yml down
+```
+
+## Автор
+
+[Астафоркин Никита](https://github.com/Astaforkin)
